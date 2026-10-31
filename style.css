@@ -194,3 +194,11 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .panel { position: sticky; top: 8px; max-height: calc(100dvh - 16px); overflow: auto; }
   .viewer-wrap { height: min(72dvh, 760px); }
 }
+
+@media (max-width: 600px) {
+  .ovrow { display: flex; gap: 6px; padding: 6px 12px 0; align-items: center; }
+  .ovrow button { min-height: 40px; padding: 0 12px; font-size: .85rem; font-weight: 600; }
+  .ovrow button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
+  .ovrow .fold { margin-left: auto; width: 44px; min-height: 40px; padding: 0; }
+  .panel.collapsed #gFlip, .panel.collapsed .tabbar, .panel.collapsed [data-sheet-active] { display: none; }
+}

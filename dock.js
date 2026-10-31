@@ -35,5 +35,24 @@
       open(-1);
     }
   }
-  mq.addEventListener('change', layout); layout();
+  // Overlay quick toggles (phone): ①②③ markers + four-point dihedral, on by default
+  const row = document.createElement('div'); row.className = 'ovrow';
+  const mk = (label, cbId) => { const cb = $(cbId), b = document.createElement('button'); b.type = 'button'; b.textContent = label;
+    const sync = () => b.setAttribute('aria-pressed', String(cb.checked));
+    b.onclick = () => { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change', { bubbles: true })); sync(); };
+    cb.addEventListener('change', sync); sync(); row.appendChild(b); return sync; };
+  const syncs = [mk('\u2460\u2461\u2462 markers', 'm_chir'), mk('Dihedral', 'm_dih')];
+  const fold = document.createElement('button'); fold.type = 'button'; fold.className = 'fold'; fold.setAttribute('aria-label', 'Collapse controls'); fold.setAttribute('aria-expanded', 'true'); fold.textContent = '\u25BE';
+  fold.onclick = () => { const c = panel.classList.toggle('collapsed'); fold.setAttribute('aria-expanded', String(!c)); fold.textContent = c ? '\u25B4' : '\u25BE'; };
+  row.appendChild(fold);
+  $('hideAll').addEventListener('click', () => setTimeout(() => syncs.forEach(s => s()), 0));
+
+  const orig = layout;
+  function layout2() {
+    orig();
+    if (mq.matches) panel.insertBefore(row, $('gRot'));
+    else row.remove();
+  }
+  mq.addEventListener('change', layout2); layout2();
+  if (mq.matches) ['m_chir', 'm_dih'].forEach(id => { const c = $(id); if (!c.checked) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } });
 })();
