@@ -99,7 +99,7 @@ This is intended as a **static website**; the deployed viewer does not need a Py
 5. After the Pages deployment completes, visit **https://nyelidl.github.io/Flip/**.
 6. Test P5/P6, selection, flipping, geometry measurements, and touch interaction on the published website.
 
-**Base path:** Project Pages are served from `/Flip/`; asset URLs must resolve correctly under this path. Keep `.nojekyll` if it is included in the prepared deployment package.
+**Base path:** Project Pages are served from `/pillarflip/`; asset URLs must resolve correctly under this path. Keep `.nojekyll` if it is included in the prepared deployment package.
 
 An optional standalone offline HTML distribution may be supplied separately; it is not required for GitHub Pages.
 
