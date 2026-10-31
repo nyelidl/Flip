@@ -96,7 +96,7 @@ This is intended as a **static website**; the deployed viewer does not need a Py
 2. Upload the **extracted contents** into the repository, with `index.html` at the **repository root** and required JavaScript, CSS, GLB, and other assets in their intended relative paths. **Do not upload only the ZIP.**
 3. In GitHub, open **Settings → Pages**.
 4. Under **Build and deployment**, choose **Deploy from a branch**, then select **`main` → `/ (root)`** and save.
-5. After the Pages deployment completes, visit **https://nyelidl.github.io/Flip/**.
+5. After the Pages deployment completes, visit **https://nyelidl.github.io/pillarflip/**.
 6. Test P5/P6, selection, flipping, geometry measurements, and touch interaction on the published website.
 
 **Base path:** Project Pages are served from `/pillarflip/`; asset URLs must resolve correctly under this path. Keep `.nojekyll` if it is included in the prepared deployment package.
