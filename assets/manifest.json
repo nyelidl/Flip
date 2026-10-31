@@ -1,0 +1,32 @@
+{
+ "generator": "tools/export_glb.py (Blender) + gltfpack 0.20 -cc -kn -km -ke -noq",
+ "sources": {
+  "ring_pillar5arene.stl": "328b3c2ba610b597c2b9edb0efb6959733b8c2437c24aabb64775039cdd29955",
+  "ring_pillar6arene.stl": "126a1cef2759a396c6f78eb0af76ce73125fbe431f66516ac108698e753cdf8f",
+  "pillararene_hexagon.stl": "111ea17711c2f9deafaa7a2421ec2115aeed791a760ddd92cfb2f1103f8ff7fb",
+  "pillararene_hexagon_chirality_teaching_v5.stl": "f5aee2d8aaa03e74b6da848586688e9ab508365eb10313ace8ad864b6d053788",
+  "arm_Bead13.stl": "888d9e63463cbe31ef08bf30dce9fc6252377ca3ac7c1809b1e6701e17bf06d3",
+  "arm_Bead16.stl": "b1ba9f5e04a9f086d8d019937fe9cd30586dc38d5e7c25d36b179ba3f730040d",
+  "arm_Bead19.stl": "d3764e5e4311d851b21734e184fb0cfd1b07770eb746886e12b4bf677fd647df",
+  "arm_Bead27.stl": "1e9409fea20e492265304a7db7ba7e1e1d0e0a0ffa18e398b898870127d6a486"
+ },
+ "marked_body": "pillararene_hexagon_chirality_teaching_v5.stl (straight 2->3 arrow) as Phenylene_01",
+ "glb": {
+  "P5": {
+   "sha256": "054a7912139067ab0ff82f5d057b07bf5922abfebca52a675b6746e070f64b2d",
+   "triangles": {
+    "Hexagonal_Body_01": 16120,
+    "Hexagonal_Body_02": 6284,
+    "Ring_Frame": 22884
+   }
+  },
+  "P6": {
+   "sha256": "3c4fd545327e3faf94305fdb8c35b178a9dc2b16e1acdf6caff4dd4acd237e9d",
+   "triangles": {
+    "Hexagonal_Body_01": 16120,
+    "Hexagonal_Body_02": 6284,
+    "Ring_Frame": 27152
+   }
+  }
+ }
+}

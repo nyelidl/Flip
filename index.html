@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pillararene 3D Chirality Explorer</title>
+<link rel="stylesheet" href="style.css">
+<!--DATA-->
+</head>
+<body>
+<header class="top">
+  <h1>Pillararene 3D Chirality Explorer</h1>
+  <p class="sub">Tap a phenylene unit to select it; double-tap (double-click) to flip it by 180°, or rotate it with the slider. Drag to rotate the view, pinch or scroll to zoom.</p>
+</header>
+<main class="layout">
+  <section class="viewer-wrap" aria-label="3D model">
+    <div id="viewer" class="viewer"></div>
+    <div id="labels" class="labels" aria-hidden="true"></div>
+    <div id="overlay" class="overlay" data-kind="loading"><div class="spinner" aria-hidden="true"></div><p id="overlayMsg">Loading model…</p></div>
+    <p id="partial" class="banner info" hidden>Partially Flipped Geometry — an intermediate pose of the model, not a molecular transition state.</p>
+    <p id="conceptual" class="banner" hidden>Conceptual flip — the printed model cannot rotate through this position with these beads.</p>
+    <p id="mismatch" class="banner error" hidden>Internal check failed: displayed geometry and stored state disagree.</p>
+    <div class="cam"><button id="focusSel" type="button" aria-label="Zoom to the selected unit">🔍 unit</button><button id="camReset" type="button" aria-label="Reset camera">⟲ view</button></div>
+  </section>
+
+  <aside class="panel" aria-label="Controls">
+    <div class="group">
+      <h2>Macrocycle</h2>
+      <div class="seg" role="group" aria-label="Ring size">
+        <button type="button" data-ring="5" aria-pressed="true">P[5]</button>
+        <button type="button" data-ring="6" aria-pressed="false">P[6]</button>
+      </div>
+    </div>
+    <div class="group">
+      <h2>Substituent arms</h2>
+      <label class="row"><input type="checkbox" id="arms" checked> show arms</label>
+      <label class="row">bead size
+        <select id="style">
+          <option value="Bead13" selected>13 mm (OH-size)</option>
+          <option value="Bead16">16 mm (OMe-size)</option>
+          <option value="Bead19">19 mm (≈ OEt-size)</option>
+          <option value="Bead27">27 mm (OTs-size)</option>
+        </select>
+      </label>
+      <p id="mech" class="note" data-kind="ok"></p>
+    </div>
+    <div class="group">
+      <h2>Flip</h2>
+      <p class="sel">Selected: <b id="selUnit">none — tap a unit</b></p>
+      <button type="button" id="flipSel" class="primary">Flip selected unit</button>
+      <div class="grid2">
+        <button type="button" id="flipAll">Flip all</button>
+        <button type="button" id="reset">Reset</button>
+        <button type="button" id="undo" aria-label="Undo">↶ Undo</button>
+        <button type="button" id="redo" aria-label="Redo">↷ Redo</button>
+      </div>
+    </div>
+    <div class="group">
+      <h2>Phenylene rotation</h2>
+      <label class="row">unit <select id="unitSel" aria-label="Selected phenylene unit"></select></label>
+      <label class="row slider-row" for="angle"><span>angle</span><output id="angleOut">—</output></label>
+      <input type="range" id="angle" min="0" max="180" step="0.5" value="0" aria-label="Rotation angle of the selected unit (degrees)" disabled>
+      <div class="ticks" aria-hidden="true"><span>0°</span><span>90°</span><span>180°</span></div>
+      <button type="button" id="play" aria-pressed="false" disabled>▶ Play</button>
+      <p class="note">Double-click / double-tap a unit (or “Flip selected unit”) to flip it. A flip from a partial angle goes to 180° if the unit is below 90°, otherwise to 0°.</p>
+    </div>
+    <div class="group">
+      <h2>Explore flip &amp; steric contact</h2>
+      <label class="row"><span><input type="checkbox" id="contactMode"> check contacts while rotating</span></label>
+      <p id="contactStatus" class="note" aria-live="polite">Off.</p>
+      <p class="note">Contact between the printed parts (CAD meshes as used in this app): the moving unit’s body and arms vs the other units and the ring. Mechanical only — not an atomic steric energy or barrier.</p>
+    </div>
+    <div class="group">
+      <h2>Geometry measurements</h2>
+      <label class="row" title="Turn of the CAD body about its CH₂···CH₂ bridge axis (the slider value, measured from the geometry). 0° = as assembled."><span><input type="checkbox" id="m_rot" checked> rotation angle</span></label>
+      <label class="row" title="① CH₂ on the ring frame, ② ring C bonded to it, ③ ortho C bearing O — the atoms used to assign pR/pS."><span><input type="checkbox" id="m_chir"> chirality markers ①②③</span></label>
+      <label class="row" title="Signed dihedral A–B–C–D (−180…+180°) about the CH₂–C bond B→C. A different quantity from the rotation angle."><span><input type="checkbox" id="m_dih"> four-point dihedral</span></label>
+      <div class="subopts"><label><input type="checkbox" id="m_dplanes" checked> planes</label><label><input type="checkbox" id="m_darc" checked> arc</label><label><input type="checkbox" id="m_dlabels" checked> A–D labels</label></div>
+      <div id="dihInfo" class="dih-info" hidden>
+        <div><b>Selected unit:</b> <span id="dihUnit"></span></div>
+        <div><b>A</b> <span id="dihA"></span></div>
+        <div><b>B</b> ① bridging CH₂ carbon (ring frame)</div>
+        <div><b>C</b> ② selected ring C bonded to B</div>
+        <div><b>D</b> ③ ortho ring C bearing O</div>
+        <div><b>Measured dihedral:</b> <span id="dihVal"></span></div>
+        <small id="dihBonds"></small>
+        <small>Source: CAD reference points mapped from the refined molecular geometry (bonded sequence verified on P5.pdb/P6.pdb); not a computed molecular torsion.</small>
+      </div>
+      <label class="row" title="Angle between the selected benzene plane and the reference macrocyclic plane (best-fit plane of the CH₂ anchors), 0–90°."><span><input type="checkbox" id="m_plane"> plane angle</span></label>
+      <label class="row" title="Angle between the slot-face normals of the selected and a neighbouring unit."><span><input type="checkbox" id="m_adj"> adjacent unit</span>
+        <select id="mNeighbour" aria-label="Neighbouring unit"><option value="next">next</option><option value="prev">previous</option></select></label>
+      <label class="row"><span><input type="checkbox" id="m_dist"> distance</span></label>
+      <div class="dist-sel"><select id="mDistA" aria-label="Distance point A"></select><select id="mDistB" aria-label="Distance point B"></select></div>
+      <div id="mValues" class="mvalues" aria-live="polite"></div>
+      <button type="button" id="hideAll">Hide all overlays</button>
+      <p class="note">Computed from the displayed CAD geometry. Rotation angle, plane angle and dihedral are three different quantities (hover/long-press for definitions).</p>
+    </div>
+    <div class="group">
+      <h2>Labels</h2>
+      <div class="seg" role="group" aria-label="Label style">
+        <button type="button" data-label="p" aria-pressed="true">pR / pS</button>
+        <button type="button" data-label="ab" aria-pressed="false">A / B</button>
+      </div>
+    </div>
+    <div class="group">
+      <h2>Student challenge</h2>
+      <button type="button" id="challengeNew">New target pattern</button>
+      <div id="challengeBox" hidden>
+        <p class="target">Target: <b id="target"></b></p>
+        <p id="challengeStatus" class="note" aria-live="polite"></p>
+        <div class="grid2"><button type="button" id="challengeHint">Hint</button><button type="button" id="challengeEnd">End</button></div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="bottom" aria-label="Chirality">
+    <div class="seqrow">
+      <h2>Orientation sequence</h2>
+      <div id="seq" class="seq"></div>
+      <p class="seqtext" id="seqText" aria-live="polite"></p>
+    </div>
+    <ul id="explain" class="explain" aria-live="polite"></ul>
+    <details class="notes">
+      <summary>How the descriptors are assigned</summary>
+      <p>Each benzene ring is a chiral plane. Following Strutt, Zhang, Schneebeli and Stoddart (<i>Chem. Eur. J.</i> 2014), the pilot atom is the
+      first carbon of the neighbouring unit (always on the cavity side); 1 = the CH₂ bonded to it, 2 = the ring carbon bonded to that CH₂,
+      3 = the adjacent ring carbon bearing O. Viewed from the pilot, 1→2→3 clockwise = pR, anticlockwise = pS. The labels are computed live
+      from the displayed 3D coordinates. The assembled model is all-pR by this convention; the correspondence to experimentally determined
+      absolute configurations has <b>not</b> been verified — use the A/B labels if you prefer a neutral description.</p>
+      <p>Symmetry classes use the idealised D<sub>n</sub> skeleton: P[5] has 8 distinct orientation patterns (4 enantiomeric pairs, none achiral);
+      P[6] has 13 (5 enantiomeric pairs and 3 achiral patterns). Mechanical warnings come from the CAD collision sweep of the printed kit; they are
+      not rotational energy barriers.</p>
+    </details>
+  </section>
+</main>
+<script src="dist/app.js"></script>
+</body>
+</html>
