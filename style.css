@@ -137,7 +137,7 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 
   .panel { display: flex; flex-direction: column; gap: 0; background: var(--surface); border-top: 2px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0); max-height: 62dvh; }
   .panel .group { border: 0; border-radius: 0; padding: 8px 12px; }
-  .panel #gArms, .panel #gContact, .panel #gMeas, .panel #gLabels, .panel #gChal { display: none; }
+  .panel #gArms:not([data-sheet-active]), .panel #gContact:not([data-sheet-active]), .panel #gMeas:not([data-sheet-active]), .panel #gLabels:not([data-sheet-active]), .panel #gChal:not([data-sheet-active]) { display: none; }
   .panel.sheet-open [data-sheet-active] { display: block; order: -1; max-height: 38dvh; overflow: auto; border-bottom: 2px solid var(--line); }
   .panel.sheet-open #gLabels[data-sheet-active] { order: -1; }
 
@@ -239,3 +239,21 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 /* camera buttons move to bottom-left on desktop/tablet so the readout owns the bottom-right */
 @media (min-width: 601px) { .cam { right: auto; left: 12px; } }
 @media (max-width: 600px) { .readout { min-width: 128px; right: 8px; bottom: 8px; } .readout .rr b { font-size: 1rem; } }
+
+/* Floating Model popover (phone) */
+.wheelpop { position: fixed; left: 10px; right: 10px; z-index: 20; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 28px rgba(0,0,0,.35); padding: 10px 12px 12px; display: none; }
+.wheelpop:not([hidden]) { display: block; }
+@media (min-width: 601px) { .wheelpop { display: none !important; } }
+.wp-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.wp-h button { min-height: 36px; padding: 0 14px; font-weight: 600; }
+.wheelwrap { position: relative; height: 132px; }
+.wheel { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; padding: 44px 0; box-sizing: border-box; scrollbar-width: none; overscroll-behavior: contain; touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); }
+.wheel::-webkit-scrollbar { display: none; }
+.wheel > div { height: 44px; scroll-snap-align: center; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; opacity: .4; transition: opacity .12s, transform .12s; transform: scale(.92); cursor: pointer; }
+.wheel > div[data-active="true"] { opacity: 1; font-weight: 700; transform: none; }
+.wheelband { position: absolute; left: 0; right: 0; top: 44px; height: 44px; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); pointer-events: none; }
+.wp-note { margin: 6px 0 8px; font-size: .82rem; color: var(--muted); min-height: 1.2em; }
+.wp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+.wp-row button { min-height: 44px; font-weight: 600; }
+.wp-row button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }

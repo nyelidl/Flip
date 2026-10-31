@@ -8,7 +8,7 @@
 
   const tabs = [
     { label: 'Measure',   groups: ['gMeas'] },
-    { label: 'Model',     groups: ['gArms', 'gContact', 'gLabels'] },
+    { label: 'Model',     groups: [], pop: true },
     { label: 'Challenge', groups: ['gChal'] }
   ];
   const bar = document.createElement('div'); bar.className = 'tabbar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'More controls');
@@ -18,11 +18,42 @@
   function open(i) {
     open.cur = i;
     document.querySelectorAll('[data-sheet-active]').forEach(e => e.removeAttribute('data-sheet-active'));
-    if (i >= 0) tabs[i].groups.forEach(id => $(id).setAttribute('data-sheet-active', ''));
-    panel.classList.toggle('sheet-open', i >= 0);
+    if (i >= 0 && !tabs[i].pop) tabs[i].groups.forEach(id => $(id).setAttribute('data-sheet-active', ''));
+    hidePop(); if (i >= 0 && tabs[i].pop) showPop();
+    panel.classList.toggle('sheet-open', i >= 0 && !tabs[i].pop);
     btns.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
   }
   open.cur = -1;
+
+  // ---- Floating "Model" popover with a swipe wheel for bead size ----
+  const pop = document.createElement('div'); pop.className = 'wheelpop'; pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Model settings');
+  const sel = $('style'), opts = [...sel.options], H = 44;
+  pop.innerHTML = '<div class="wp-h"><span>Bead size</span><button type="button" class="wp-done">Done</button></div>' +
+    '<div class="wheelwrap"><div class="wheel" tabindex="0" role="listbox" aria-label="Bead size">' + opts.map(o => '<div role="option" data-v="' + o.value + '">' + o.textContent + '</div>').join('') + '</div><div class="wheelband"></div></div>' +
+    '<p class="wp-note" id="wpMech"></p>' +
+    '<div class="wp-row"><button type="button" data-t="arms">Show arms</button><button type="button" data-t="contactMode">Check contacts</button></div>' +
+    '<div class="wp-row"><button type="button" data-lbl="p">pR / pS</button><button type="button" data-lbl="ab">A / B</button></div>';
+  document.body.appendChild(pop);
+  const wheel = pop.querySelector('.wheel'), items = [...wheel.children];
+  const mark = () => { const k = Math.max(0, Math.min(items.length - 1, Math.round(wheel.scrollTop / H))); items.forEach((e, n) => e.dataset.active = String(n === k)); return k; };
+  let wt; wheel.addEventListener('scroll', () => { const k = mark(); clearTimeout(wt); wt = setTimeout(() => { if (sel.selectedIndex !== k) { sel.selectedIndex = k; sel.dispatchEvent(new Event('change', { bubbles: true })); } }, 120); });
+  items.forEach((e, n) => e.onclick = () => wheel.scrollTo({ top: n * H, behavior: 'smooth' }));
+  pop.querySelector('.wp-done').onclick = () => open(-1);
+  const tog = { arms: $('arms'), contactMode: $('contactMode') };
+  const syncPop = () => {
+    pop.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', String(tog[b.dataset.t].checked)));
+    pop.querySelectorAll('[data-lbl]').forEach(b => { const src = document.querySelector('.seg [data-label="' + b.dataset.lbl + '"]'); b.setAttribute('aria-pressed', src ? src.getAttribute('aria-pressed') : 'false'); });
+    $('wpMech').textContent = ($('mech').textContent || '').trim();
+  };
+  pop.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { const c = tog[b.dataset.t]; c.checked = !c.checked; c.dispatchEvent(new Event('change', { bubbles: true })); syncPop(); });
+  pop.querySelectorAll('[data-lbl]').forEach(b => b.onclick = () => { const src = document.querySelector('.seg [data-label="' + b.dataset.lbl + '"]'); if (src) src.click(); setTimeout(syncPop, 0); });
+  new MutationObserver(syncPop).observe($('mech'), { childList: true, characterData: true, subtree: true });
+  function showPop() {
+    const r = panel.getBoundingClientRect(); pop.style.bottom = (innerHeight - r.top + 8) + 'px'; pop.hidden = false; syncPop();
+    wheel.scrollTop = sel.selectedIndex * H; mark();
+  }
+  function hidePop() { pop.hidden = true; }
+  document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && !bar.contains(e.target)) open(-1); });
 
   function layout() {
     if (mq.matches) {
