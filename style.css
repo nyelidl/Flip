@@ -451,3 +451,34 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .readout { right: 8px; bottom: 60px; }
   .readout .rr { padding: 3px 10px; } .readout .rr b { font-size: 1rem; } .readout .rr span { font-size: .64rem; }
 }
+
+/* ===== Desktop ≥1100px: viewer on top, controls in TWO rows beneath (no long sidebar scroll) ===== */
+@media (min-width: 1100px) {
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "viewer" "panel" "bottom"; align-items: stretch; gap: 10px; }
+  .viewer-wrap { height: clamp(420px, calc(100dvh - 400px), 820px); min-height: 420px; }
+  .panel { position: static; max-height: none; overflow: visible; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; align-items: stretch; }
+  .panel .group { padding: 8px 12px 10px; min-width: 0; }
+  .panel .group h2 { margin-bottom: 4px; }
+  #gRing { grid-column: span 2; grid-row: 1; } #gArms { grid-column: span 3; grid-row: 1; } #gFlip { grid-column: span 3; grid-row: 1; } #gRot { grid-column: span 4; grid-row: 1; }
+  #gContact { grid-column: span 3; grid-row: 2; } #gMeas { grid-column: span 5; grid-row: 2; } #gLabels { grid-column: span 2; grid-row: 2; } #gChal { grid-column: span 2; grid-row: 2; }
+  .panel .row { margin: 3px 0; } .panel button, .panel select { min-height: 36px; padding-top: 5px; padding-bottom: 5px; }
+  .panel .note { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 4px 0 0; font-size: .78rem; line-height: 1.3; }
+  #gFlip .sel { margin: 0 0 6px; } #gFlip .primary { margin-bottom: 6px; } #gFlip .grid2 { gap: 5px; }
+  #gRot input[type=range] { min-height: 24px; margin: 2px 0 0; } #gRot .ticks { margin-bottom: 4px; } #gRot #play { margin-top: 2px; }
+  #gMeas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; align-content: start; }
+  #gMeas > h2, #gMeas > .subopts, #gMeas > .dih-info, #gMeas > .mvalues, #gMeas > #hideAll, #gMeas > .note { grid-column: 1 / -1; }
+  #gMeas > .subopts { margin: -2px 0 4px 26px; }
+  #gMeas .row { min-height: 30px; }
+  #gChal #challengeNew, #gChal .grid2 button { width: 100%; }
+  .bottom { padding: 10px 14px; } .bottom .explain { margin: 8px 0 4px; }
+}
+
+/* Right-hand column: Rotation | Dihedral readout on top, camera buttons stacked underneath */
+.readout { top: 30px; bottom: auto; right: 12px; }
+.cam { top: 96px; bottom: auto; right: 12px; left: auto; flex-direction: column; gap: 8px; }
+.cam button { width: 44px; min-height: 44px; padding: 0; justify-content: center; }
+.cam button span { display: none; }
+@media (max-width: 600px) {
+  .readout { top: 26px; right: 8px; }
+  .cam { top: 84px; right: 8px; left: auto; bottom: auto; flex-direction: column; gap: 8px; }
+}
