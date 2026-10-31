@@ -7,8 +7,8 @@
   const home = { ring: ring.nextElementSibling, seqrow: seqrow.parentNode };
 
   const tabs = [
-    { label: 'Measure',   groups: ['gMeas'] },
-    { label: 'Model',     groups: [], pop: true },
+    { label: 'Arm',       groups: [], pop: true },
+    { label: 'Option',    groups: ['gMeas', 'gContact', 'gLabels'] },
     { label: 'Challenge', groups: ['gChal'] }
   ];
   const bar = document.createElement('div'); bar.className = 'tabbar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'More controls');
@@ -25,35 +25,46 @@
   }
   open.cur = -1;
 
-  // ---- Floating "Model" popover with a swipe wheel for bead size ----
-  const pop = document.createElement('div'); pop.className = 'wheelpop'; pop.hidden = true; pop.style.cssText = 'position:fixed;left:10px;right:10px;z-index:50;display:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;box-shadow:0 8px 28px rgba(0,0,0,.35)'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Model settings');
-  const sel = $('style'), opts = [...sel.options], H = 44;
-  pop.innerHTML = '<div class="wp-h"><span>Bead size</span><button type="button" class="wp-done">Done</button></div>' +
-    '<div class="wheelwrap"><div class="wheel" tabindex="0" role="listbox" aria-label="Bead size">' + opts.map(o => '<div role="option" data-v="' + o.value + '">' + o.textContent + '</div>').join('') + '</div><div class="wheelband"></div></div>' +
-    '<p class="wp-note" id="wpMech"></p>' +
-    '<div class="wp-row"><button type="button" data-t="arms">Show arms</button><button type="button" data-t="contactMode">Check contacts</button></div>' +
-    '<div class="wp-row"><button type="button" data-lbl="p">pR / pS</button><button type="button" data-lbl="ab">A / B</button></div>';
+  // ---- Floating "Model" popover: swipe across graduated bead circles to pick a size ----
+  const pop = document.createElement('div'); pop.className = 'wheelpop'; pop.hidden = true;
+  pop.style.cssText = 'position:fixed;width:304px;max-width:calc(100vw - 16px);z-index:50;display:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;box-shadow:0 8px 28px rgba(0,0,0,.35)';
+  pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Model settings');
+  const sel = $('style'), opts = [...sel.options];
+  const parse = t => { const m = /^(.*?)\s*\((.*)\)$/.exec(t.trim()); return m ? [m[1], m[2]] : [t, '']; };
+  pop.innerHTML = '<div class="wp-h"><label class="wp-switch"><input type="checkbox" class="wp-hide"><span>Hide arm</span></label><button type="button" class="wp-done">Done</button></div><div class="wp-sub">Bead size \u00B7 swipe or tap</div>' +
+    '<div class="beadrow" role="radiogroup" aria-label="Bead size">' + opts.map(o => { const [a] = parse(o.textContent), mm = parseFloat(a) || 13;
+      return '<button type="button" class="bead" role="radio" data-v="' + o.value + '"><span class="orb"><i style="width:' + Math.round(mm * 1.7) + 'px;height:' + Math.round(mm * 1.7) + 'px"></i></span><b>' + mm + '</b></button>'; }).join('') + '</div>' +
+    '<div class="beadname" id="wpName"></div><p class="wp-note" id="wpMech"></p>' +
+    '<div class="wp-caret"></div>';
   document.body.appendChild(pop);
-  const wheel = pop.querySelector('.wheel'), items = [...wheel.children];
-  const mark = () => { const k = Math.max(0, Math.min(items.length - 1, Math.round(wheel.scrollTop / H))); items.forEach((e, n) => e.dataset.active = String(n === k)); return k; };
-  let wt; wheel.addEventListener('scroll', () => { const k = mark(); clearTimeout(wt); wt = setTimeout(() => { if (sel.selectedIndex !== k) { sel.selectedIndex = k; sel.dispatchEvent(new Event('change', { bubbles: true })); } }, 120); });
-  items.forEach((e, n) => e.onclick = () => wheel.scrollTo({ top: n * H, behavior: 'smooth' }));
+  const row2 = pop.querySelector('.beadrow'), beads = [...row2.children];
+  const pick = k => { k = Math.max(0, Math.min(beads.length - 1, k)); beads.forEach((b, n) => { b.setAttribute('aria-checked', String(n === k)); b.dataset.on = String(n === k); b.dataset.pass = String(n < k); });
+    const [a, b2] = parse(opts[k].textContent); $('wpName').textContent = a + (b2 ? ' \u00B7 ' + b2 : '');
+    if (sel.selectedIndex !== k) { sel.selectedIndex = k; sel.dispatchEvent(new Event('change', { bubbles: true })); } };
+  const at = x => { let best = 0, d = 1e9; beads.forEach((b, n) => { const r = b.getBoundingClientRect(), dd = Math.abs(x - (r.left + r.width / 2)); if (dd < d) { d = dd; best = n; } }); return best; };
+  let drag = false;
+  row2.addEventListener('pointerdown', ev => { drag = true; row2.setPointerCapture(ev.pointerId); pick(at(ev.clientX)); });
+  row2.addEventListener('pointermove', ev => { if (drag) pick(at(ev.clientX)); });
+  const end = () => { drag = false; }; row2.addEventListener('pointerup', end); row2.addEventListener('pointercancel', end);
+  row2.addEventListener('keydown', ev => { const d = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0; if (d) { ev.preventDefault(); pick(sel.selectedIndex + d); } });
   pop.querySelector('.wp-done').onclick = () => open(-1);
-  const tog = { arms: $('arms'), contactMode: $('contactMode') };
   const syncPop = () => {
-    pop.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', String(tog[b.dataset.t].checked)));
-    pop.querySelectorAll('[data-lbl]').forEach(b => { const src = document.querySelector('.seg [data-label="' + b.dataset.lbl + '"]'); b.setAttribute('aria-pressed', src ? src.getAttribute('aria-pressed') : 'false'); });
+    pop.querySelector('.wp-hide').checked = !$('arms').checked;
     $('wpMech').textContent = ($('mech').textContent || '').trim();
   };
-  pop.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { const c = tog[b.dataset.t]; c.checked = !c.checked; c.dispatchEvent(new Event('change', { bubbles: true })); syncPop(); });
-  pop.querySelectorAll('[data-lbl]').forEach(b => b.onclick = () => { const src = document.querySelector('.seg [data-label="' + b.dataset.lbl + '"]'); if (src) src.click(); setTimeout(syncPop, 0); });
+  pop.querySelector('.wp-hide').onchange = ev => { const c = $('arms'); c.checked = !ev.target.checked; c.dispatchEvent(new Event('change', { bubbles: true })); syncPop(); };
   new MutationObserver(syncPop).observe($('mech'), { childList: true, characterData: true, subtree: true });
   function showPop() {
-    const r = panel.getBoundingClientRect(); pop.style.bottom = (innerHeight - r.top + 8) + 'px'; pop.hidden = false; pop.style.display = 'block'; syncPop();
-    wheel.scrollTop = sel.selectedIndex * H; mark();
+    const r = btns[0].getBoundingClientRect(), vw = document.documentElement.clientWidth, pw = Math.min(304, vw - 16);
+    const cx = r.left + r.width / 2, left = Math.max(8, Math.min(vw - pw - 8, cx - pw / 2));
+    pop.style.left = left + 'px'; pop.style.bottom = (innerHeight - r.top + 10) + 'px';
+    pop.querySelector('.wp-caret').style.left = (cx - left - 8) + 'px';
+    pop.hidden = false; pop.style.display = 'block'; syncPop();
+    const k = sel.selectedIndex; beads.forEach((b, n) => { b.setAttribute('aria-checked', String(n === k)); b.dataset.on = String(n === k); b.dataset.pass = String(n < k); });
+    const [a, b2] = parse(opts[k].textContent); $('wpName').textContent = a + (b2 ? ' \u00B7 ' + b2 : '');
   }
   function hidePop() { pop.hidden = true; pop.style.display = 'none'; }
-  document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && !bar.contains(e.target)) open(-1); });
+  document.addEventListener('pointerdown', ev => { if (!pop.hidden && !pop.contains(ev.target) && !bar.contains(ev.target)) open(-1); });
 
   function layout() {
     if (mq.matches) {
