@@ -222,3 +222,10 @@
       const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png');
   });
 })();
+
+/* Play / Pause: make Pause react on press (the button is re-rendered every frame while playing) */
+(() => {
+  const p = document.getElementById('play'); let t = 0;
+  p.addEventListener('pointerdown', () => { if (p.getAttribute('aria-pressed') === 'true') { t = Date.now(); p.click(); } }, true);
+  p.addEventListener('click', e => { if (e.isTrusted && Date.now() - t < 800) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+})();

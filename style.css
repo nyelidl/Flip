@@ -432,3 +432,22 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 .cam .camicon { display: inline-flex; align-items: center; justify-content: center; width: 44px; padding: 0; min-height: 40px; }
 .cam .camicon[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
 @media (max-width: 600px) { .cam .camicon { min-height: 44px; } }
+
+/* Banners: compact strip pinned to the top edge of the 3D view */
+.banner { left: 0; right: 0; top: 0; margin: 0; padding: 3px 10px; border-radius: 0; border-width: 0 0 1px 0; font-size: .74rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.banner.info + .banner:not([hidden]) { top: 22px; }
+.banner.error { top: auto; bottom: 0; border-width: 1px 0 0 0; white-space: normal; }
+@media (max-width: 600px) { .banner { font-size: .68rem; padding: 2px 8px; } .banner.info + .banner:not([hidden]) { top: 19px; } }
+
+/* Readout sits directly above the camera toolbar (bottom-right), compact */
+.cam { position: absolute; right: 12px; left: auto; bottom: 12px; top: auto; flex-direction: row; gap: 6px; }
+.readout { right: 12px; bottom: 64px; border-radius: 10px; }
+.readout .rr { padding: 4px 12px; gap: 0; }
+.readout .rr b { font-size: 1.15rem; }
+.readout .rr span { font-size: .68rem; }
+@media (max-width: 600px) {
+  .cam { right: 8px; left: auto; top: auto; bottom: 8px; flex-direction: row; }
+  .cam button { width: 44px; min-height: 44px; }
+  .readout { right: 8px; bottom: 60px; }
+  .readout .rr { padding: 3px 10px; } .readout .rr b { font-size: 1rem; } .readout .rr span { font-size: .64rem; }
+}
