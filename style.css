@@ -200,7 +200,8 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .ovrow button { min-height: 40px; padding: 0 12px; font-size: .85rem; font-weight: 600; }
   .ovrow button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
   .ovrow .fold { margin-left: auto; width: 44px; min-height: 40px; padding: 0; }
-  .panel.collapsed #gFlip, .panel.collapsed .tabbar, .panel.collapsed [data-sheet-active] { display: none; }
+  .panel.collapsed #gFlip, .panel.collapsed [data-sheet-active], .panel.collapsed .tabbar button:not(:nth-child(2)) { display: none; }
+  .panel.collapsed .tabbar { grid-template-columns: 1fr; }
 }
 
 /* ===== Manual light / dark (overrides OS preference once the user taps the toggle) ===== */
@@ -257,3 +258,12 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 .wp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
 .wp-row button { min-height: 44px; font-weight: 600; }
 .wp-row button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
+
+/* Phone: big "Flip selected unit" beside "Flip all"; Reset / Undo / Redo smaller underneath */
+@media (max-width: 600px) {
+  .panel #gFlip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .panel #gFlip .grid2 { display: contents; }
+  .panel #gFlip .primary { grid-column: span 4; grid-row: 1; min-height: 52px; margin: 0; font-size: 1.05rem; }
+  .panel #gFlip #flipAll { grid-column: span 2; grid-row: 1; min-height: 52px; font-weight: 600; }
+  .panel #gFlip #reset, .panel #gFlip #undo, .panel #gFlip #redo { grid-column: span 2; grid-row: 2; min-height: 36px; font-size: .8rem; padding: 0 4px; }
+}

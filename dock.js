@@ -26,7 +26,7 @@
   open.cur = -1;
 
   // ---- Floating "Model" popover with a swipe wheel for bead size ----
-  const pop = document.createElement('div'); pop.className = 'wheelpop'; pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Model settings');
+  const pop = document.createElement('div'); pop.className = 'wheelpop'; pop.hidden = true; pop.style.cssText = 'position:fixed;left:10px;right:10px;z-index:50;display:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;box-shadow:0 8px 28px rgba(0,0,0,.35)'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Model settings');
   const sel = $('style'), opts = [...sel.options], H = 44;
   pop.innerHTML = '<div class="wp-h"><span>Bead size</span><button type="button" class="wp-done">Done</button></div>' +
     '<div class="wheelwrap"><div class="wheel" tabindex="0" role="listbox" aria-label="Bead size">' + opts.map(o => '<div role="option" data-v="' + o.value + '">' + o.textContent + '</div>').join('') + '</div><div class="wheelband"></div></div>' +
@@ -49,10 +49,10 @@
   pop.querySelectorAll('[data-lbl]').forEach(b => b.onclick = () => { const src = document.querySelector('.seg [data-label="' + b.dataset.lbl + '"]'); if (src) src.click(); setTimeout(syncPop, 0); });
   new MutationObserver(syncPop).observe($('mech'), { childList: true, characterData: true, subtree: true });
   function showPop() {
-    const r = panel.getBoundingClientRect(); pop.style.bottom = (innerHeight - r.top + 8) + 'px'; pop.hidden = false; syncPop();
+    const r = panel.getBoundingClientRect(); pop.style.bottom = (innerHeight - r.top + 8) + 'px'; pop.hidden = false; pop.style.display = 'block'; syncPop();
     wheel.scrollTop = sel.selectedIndex * H; mark();
   }
-  function hidePop() { pop.hidden = true; }
+  function hidePop() { pop.hidden = true; pop.style.display = 'none'; }
   document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && !bar.contains(e.target)) open(-1); });
 
   function layout() {
@@ -74,7 +74,7 @@
     cb.addEventListener('change', sync); sync(); row.appendChild(b); return sync; };
   const syncs = [mk('\u2460\u2461\u2462', 'm_chir'), mk('Dihedral', 'm_dih'), mk('A\u2013D', 'm_dlabels')];
   const fold = document.createElement('button'); fold.type = 'button'; fold.className = 'fold'; fold.setAttribute('aria-label', 'Collapse controls'); fold.setAttribute('aria-expanded', 'true'); fold.textContent = '\u25BE';
-  fold.onclick = () => { const c = panel.classList.toggle('collapsed'); fold.setAttribute('aria-expanded', String(!c)); fold.textContent = c ? '\u25B4' : '\u25BE'; };
+  fold.onclick = () => { open(-1); const c = panel.classList.toggle('collapsed'); fold.setAttribute('aria-expanded', String(!c)); fold.textContent = c ? '\u25B4' : '\u25BE'; };
   row.appendChild(fold);
   $('hideAll').addEventListener('click', () => setTimeout(() => syncs.forEach(s => s()), 0));
 
