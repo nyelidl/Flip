@@ -8,8 +8,8 @@ Explore a modular, 3D-printable pillararene teaching model in a browser. Select 
 
 ## Launch
 
-**[Open the web app (GitHub Pages)](https://nyelidl.github.io/flip/)**  
-**[GitHub repository](https://github.com/nyelidl/flip)**
+**[Open the web app (GitHub Pages)](https://nyelidl.github.io/pillarflip/)**  
+**[GitHub repository](https://github.com/nyelidl/pillarflip)**
 
 The GitHub Pages link is expected to work **after deployment is enabled and succeeds** for this repository. The public site was not independently verified when this README was prepared.
 
