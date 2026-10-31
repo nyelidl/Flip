@@ -13,6 +13,14 @@ Explore a modular, 3D-printable pillararene teaching model in a browser. Select 
 
 The GitHub Pages link is expected to work **after deployment is enabled and succeeds** for this repository. The public site was not independently verified when this README was prepared.
 
+## Web App Preview
+
+![Pillararene 3D Chirality Explorer — Desktop and Mobile UI](assets/UI.png)
+
+*Desktop four-point dihedral measurement and mobile P5 explorer interface.*
+
+---
+
 ## Features
 
 | Feature | What it does |
