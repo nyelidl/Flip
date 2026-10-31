@@ -51,7 +51,7 @@
   pop.querySelector('.wp-hide').onchange = ev => { const c = $('arms'); c.checked = !ev.target.checked; c.dispatchEvent(new Event('change', { bubbles: true })); syncPop(); };
   new MutationObserver(syncPop).observe($('mech'), { childList: true, characterData: true, subtree: true });
   function showPop() {
-    const r = btns[0].getBoundingClientRect(), vw = document.documentElement.clientWidth, pw = Math.min(304, vw - 16);
+    const r = btns[tabs.findIndex(t => t.pop)].getBoundingClientRect(), vw = document.documentElement.clientWidth, pw = Math.min(304, vw - 16);
     const cx = r.left + r.width / 2, left = Math.max(8, Math.min(vw - pw - 8, cx - pw / 2));
     pop.style.left = left + 'px'; pop.style.bottom = (innerHeight - r.top + 10) + 'px';
     pop.querySelector('.wp-caret').style.left = (cx - left - 8) + 'px';
@@ -180,4 +180,19 @@
   c.addEventListener('change', () => { if (c.checked) set(d, false); });
   d.addEventListener('change', () => { if (d.checked) { set(c, false); set(l, true); } });
   set(l, true);
+})();
+
+/* Desktop: On | Off buttons for chirality markers and four-point dihedral */
+(() => {
+  ['m_chir', 'm_dih'].forEach(id => {
+    const cb = document.getElementById(id), row = cb.closest('.row'); if (!row) return;
+    const seg = document.createElement('div'); seg.className = 'onoff'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', row.textContent.trim());
+    const on = document.createElement('button'), off = document.createElement('button'); on.type = off.type = 'button'; on.textContent = 'On'; off.textContent = 'Off';
+    const sync = () => { on.setAttribute('aria-pressed', String(cb.checked)); off.setAttribute('aria-pressed', String(!cb.checked)); };
+    const set = v => { if (cb.checked !== v) { cb.checked = v; cb.dispatchEvent(new Event('change', { bubbles: true })); } sync(); };
+    on.onclick = e => { e.preventDefault(); set(true); }; off.onclick = e => { e.preventDefault(); set(false); };
+    cb.addEventListener('change', sync); document.getElementById('hideAll').addEventListener('click', () => setTimeout(sync, 0));
+    ['m_chir', 'm_dih'].forEach(o => document.getElementById(o).addEventListener('change', sync));
+    seg.append(on, off); row.appendChild(seg); sync();
+  });
 })();
