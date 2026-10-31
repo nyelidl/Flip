@@ -196,3 +196,29 @@
     seg.append(on, off); row.appendChild(seg); sync();
   });
 })();
+
+/* Camera toolbar: unit | view | centre (toggle) | capture */
+(() => {
+  const $ = id => document.getElementById(id), cam = document.querySelector('.cam'), viewer = $('viewer');
+  const svg = p => '<svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  const ctr = $('roCenter');
+  ctr.innerHTML = svg('<line x1="2" x2="5" y1="12" y2="12"/><line x1="19" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="5"/><line x1="12" x2="12" y1="19" y2="22"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/>');
+  ctr.className = 'camicon'; ctr.setAttribute('aria-label', 'Keep the selected unit centred'); ctr.title = 'Auto-centre the selected unit'; cam.appendChild(ctr);
+  const shot = document.createElement('button'); shot.type = 'button'; shot.className = 'camicon'; shot.setAttribute('aria-label', 'Save a picture of the view'); shot.title = 'Save picture';
+  shot.innerHTML = svg('<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>'); cam.appendChild(shot);
+  shot.onclick = () => requestAnimationFrame(() => {
+    const cv = viewer.querySelector('canvas'); if (!cv) return;
+    const out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height; const g = out.getContext('2d');
+    try { g.drawImage(cv, 0, 0); } catch (e) { return; }
+    const vr = viewer.getBoundingClientRect(), k = cv.width / vr.width;
+    document.querySelectorAll('#labels > span').forEach(el => { if (el.hidden || el.dataset.off === '1') return;
+      const r = el.getBoundingClientRect(), cs = getComputedStyle(el), x = (r.left - vr.left) * k, y = (r.top - vr.top) * k, w = r.width * k, h = r.height * k;
+      if (r.width === 0 || x + w < 0 || y + h < 0 || x > out.width || y > out.height) return;
+      const bg = cs.backgroundColor; if (bg && bg !== 'rgba(0, 0, 0, 0)') { g.fillStyle = bg; g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, Math.min(h / 2, 10 * k)) : g.rect(x, y, w, h); g.fill(); }
+      g.fillStyle = cs.color; g.font = cs.fontWeight + ' ' + (parseFloat(cs.fontSize) * k) + 'px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(el.textContent, x + w / 2, y + h / 2 + k); });
+    const unit = (($('selUnit') || {}).textContent || '').match(/U\d+/), name = 'chirality-' + (unit ? unit[0] : 'view') + '.png';
+    out.toBlob(async b => { if (!b) return; const f = new File([b], name, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f] }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png');
+  });
+})();

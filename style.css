@@ -417,3 +417,18 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 .m-label.chir { font: 900 22px/1 system-ui, sans-serif; color: #fff; text-shadow: none; }
 .m-label.dpt { font: 900 22px/1 system-ui, sans-serif; color: #000; text-shadow: 0 0 3px rgba(255,255,255,.55); }
 @media (max-width: 600px) { .m-label.chir, .m-label.dpt { font-size: 17px; } }
+
+/* Readout: one row, Rotation | Dihedral; header (unit + centre) removed */
+.readout { display: flex; min-width: 0; }
+.readout .rh { display: none; }
+.readout .rr { flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 14px; border-top: 0; }
+.readout .rr + .rr { border-top: 0; border-left: 1px solid var(--line); }
+.readout .rr b { font-size: 1.5rem; line-height: 1.1; }
+.readout .rr span { font-size: .8rem; }
+.readout .rr[hidden] { display: none; }
+@media (max-width: 600px) { .readout .rr { padding: 6px 12px; } .readout .rr b { font-size: 1.2rem; } .readout .rr span { font-size: .72rem; } }
+
+/* Camera icon buttons */
+.cam .camicon { display: inline-flex; align-items: center; justify-content: center; width: 44px; padding: 0; min-height: 40px; }
+.cam .camicon[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
+@media (max-width: 600px) { .cam .camicon { min-height: 44px; } }
