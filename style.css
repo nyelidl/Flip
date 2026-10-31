@@ -326,3 +326,5 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 
 .wp-switch span { white-space: nowrap; }
 .bead[data-on="true"] .orb i { box-shadow: 0 2px 6px rgba(0,0,0,.3); outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.row:has(#dimOthers) { --dot: #8FA1AA; }

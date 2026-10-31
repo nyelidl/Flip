@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pillararene 3D Chirality Explorer</title>
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=15">
 <!--DATA-->
 </head>
 <body>
@@ -97,6 +97,7 @@
     </div>
     <div class="group" id="gLabels">
       <h2>Labels</h2>
+      <label class="row" title="Fade the grey bodies of the units that are not selected"><span><input type="checkbox" id="dimOthers" checked> dim unselected units</span></label>
       <div class="seg" role="group" aria-label="Label style">
         <button type="button" data-label="p" aria-pressed="true">pR / pS</button>
         <button type="button" data-label="ab" aria-pressed="false">A / B</button>
@@ -134,6 +135,6 @@
   </section>
 </main>
 <script src="dist/app.js"></script>
-<script src="dock.js?v=13"></script>
+<script src="dock.js?v=15"></script>
 </body>
 </html>
