@@ -97,7 +97,8 @@
   let center = true, lastUnit = null;
   $('roCenter').onclick = e => { center = !center; e.currentTarget.setAttribute('aria-pressed', String(center)); if (center) recentre(true); };
   function recentre(force) {
-    const m = /U(\d+)/.exec(val($('selUnit'))); if (!m) return;
+    const m = /U(\d+)/.exec(val($('selUnit'))); if (!m) { lastUnit = null; return; }
+    if (!force && lastUnit === null) { lastUnit = m[1]; return; }   // first selection after load: keep the default full-ring view
     if (!force && m[1] === lastUnit) return;
     lastUnit = m[1]; if (center) setTimeout(() => $('focusSel').click(), 60);
   }
