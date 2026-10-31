@@ -34,7 +34,7 @@
   pop.innerHTML = '<div class="wp-h"><label class="wp-switch"><input type="checkbox" class="wp-hide"><span>Hide arm</span></label><button type="button" class="wp-done">Done</button></div><div class="wp-sub">Bead size \u00B7 swipe or tap</div>' +
     '<div class="beadrow" role="radiogroup" aria-label="Bead size">' + opts.map(o => { const [a] = parse(o.textContent), mm = parseFloat(a) || 13;
       return '<button type="button" class="bead" role="radio" data-v="' + o.value + '"><span class="orb"><i style="width:' + Math.round(mm * 1.7) + 'px;height:' + Math.round(mm * 1.7) + 'px;--bc:' + ({13:'#9acbe4',16:'#f1b5c1',19:'#f29d29',27:'#f1ca14'}[mm] || '#9acbe4') + '"></i></span><b>' + mm + '</b></button>'; }).join('') + '</div>' +
-    '<div class="beadname" id="wpName"></div><p class="wp-note" id="wpMech"></p>' +
+    '<div class="beadname" id="wpName"></div>' +
     '<div class="wp-caret"></div>';
   document.body.appendChild(pop);
   const row2 = pop.querySelector('.beadrow'), beads = [...row2.children];
@@ -50,7 +50,6 @@
   pop.querySelector('.wp-done').onclick = () => open(-1);
   const syncPop = () => {
     pop.querySelector('.wp-hide').checked = !$('arms').checked;
-    $('wpMech').textContent = ($('mech').textContent || '').trim();
   };
   pop.querySelector('.wp-hide').onchange = ev => { const c = $('arms'); c.checked = !ev.target.checked; c.dispatchEvent(new Event('change', { bubbles: true })); syncPop(); };
   new MutationObserver(syncPop).observe($('mech'), { childList: true, characterData: true, subtree: true });
@@ -86,14 +85,18 @@
   const syncs = [mk('\u2460\u2461\u2462', 'm_chir'), mk('Dihedral', 'm_dih'), mk('A\u2013D', 'm_dlabels')];
   const fold = document.createElement('button'); fold.type = 'button'; fold.className = 'fold'; fold.setAttribute('aria-label', 'Collapse controls'); fold.setAttribute('aria-expanded', 'true'); fold.textContent = '\u25BE';
   fold.onclick = () => { open(-1); const c = panel.classList.toggle('collapsed'); fold.setAttribute('aria-expanded', String(!c)); fold.textContent = c ? '\u25B4' : '\u25BE'; };
-  row.appendChild(fold);
   $('hideAll').addEventListener('click', () => setTimeout(() => syncs.forEach(s => s()), 0));
 
+  const os = document.createElement('div'); os.className = 'optsheet';
   const orig = layout;
   function layout2() {
     orig();
-    if (mq.matches) panel.insertBefore(row, $('gRot'));
-    else row.remove();
+    const g2 = document.querySelector('#gFlip .grid2'), acts = ['reset', 'undo', 'redo'].map($);
+    const OG = ['gContact', 'gMeas', 'gLabels', 'gChal'].map($);
+    if (mq.matches) { if (!os.parentNode) panel.insertBefore(os, panel.firstChild); OG.forEach(g => os.appendChild(g)); }
+    else { const ch = $('gChal'); OG.forEach(g => { if (g.parentNode === os) panel.appendChild(g); }); os.remove(); }
+    if (mq.matches) { panel.insertBefore(row, $('gRot')); acts.forEach(b => row.appendChild(b)); $('gFlip').appendChild(fold); }
+    else { row.remove(); acts.forEach(b => g2.appendChild(b)); fold.remove(); }
   }
   mq.addEventListener('change', layout2); layout2();
   if (mq.matches) ['m_chir', 'm_dih'].forEach(id => { const c = $(id); if (!c.checked) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } });

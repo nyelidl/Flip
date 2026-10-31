@@ -200,7 +200,7 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .ovrow button { min-height: 40px; padding: 0 12px; font-size: .85rem; font-weight: 600; }
   .ovrow button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
   .ovrow .fold { margin-left: auto; width: 44px; min-height: 40px; padding: 0; }
-  .panel.collapsed #gFlip, .panel.collapsed [data-sheet-active], .panel.collapsed .tabbar button:not(:nth-child(1)) { display: none; }
+  .panel.collapsed #flipSel, .panel.collapsed #flipAll, .panel.collapsed [data-sheet-active], .panel.collapsed .tabbar button:not(:nth-child(1)) { display: none; }
   .panel.collapsed .tabbar { grid-template-columns: 1fr; }
 }
 
@@ -341,3 +341,31 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 
 /* Bead circles use the real filament colours: 13 blue, 16 pink, 19 orange, 27 yellow */
 .bead .orb i { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--bc) 40%, #fff) 0%, var(--bc) 55%, color-mix(in srgb, var(--bc) 72%, #000) 100%); }
+
+/* Phone: Flip row = Flip selected | Flip all | fold ; Reset / Undo / Redo sit beside ①②③ Dihedral A–D */
+@media (max-width: 600px) {
+  .panel #gFlip .primary { grid-column: span 3; }
+  .panel #gFlip #flipAll { grid-column: span 2; }
+  .panel #gFlip .fold { grid-column: span 1; grid-row: 1; min-height: 52px; padding: 0; font-size: 1.1rem; }
+  .ovrow { gap: 4px; padding: 6px 8px 0; }
+  .ovrow button { min-height: 40px; padding: 0 8px; font-size: .8rem; }
+  .ovrow #undo, .ovrow #redo { width: 38px; padding: 0; font-size: 0; }
+  .ovrow #undo::before { content: "\21B6"; font-size: 1.15rem; } .ovrow #redo::before { content: "\21B7"; font-size: 1.15rem; }
+  .ovrow #reset { margin-left: auto; }
+}
+
+/* Phone Option sheet = ONE scroll area (fixes stacked scroll boxes) */
+@media (max-width: 600px) {
+  .panel { max-height: none; overflow: visible; }
+  .optsheet { display: none; }
+  .panel.sheet-open .optsheet { display: block; max-height: 44dvh; overflow-y: auto; overscroll-behavior: contain; border-bottom: 2px solid var(--line); background: var(--surface); }
+  .panel .optsheet [data-sheet-active] { max-height: none; overflow: visible; order: 0; border-bottom: 0; }
+  .optsheet .group + .group { border-top: 2px solid var(--line); }
+  .optsheet #gChal button, .optsheet #gMeas #hideAll { min-height: 44px; }
+  .dist-sel { display: none; }
+  .row:has(#m_dist:checked) + .dist-sel { display: grid; padding: 0 14px 8px; }
+  .optsheet .mvalues { padding: 6px 14px 0; }
+  .optsheet .dih-info { margin: 8px 14px; }
+  .optsheet #gMeas > .note, .optsheet #gContact > .note { padding: 8px 16px 4px; }
+  .optsheet #contactStatus { padding-top: 4px; }
+}
