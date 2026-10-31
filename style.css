@@ -369,3 +369,23 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .optsheet #gMeas > .note, .optsheet #gContact > .note { padding: 8px 16px 4px; }
   .optsheet #contactStatus { padding-top: 4px; }
 }
+
+/* A–D letters sit directly on their point circles */
+.m-label.dpt { background: transparent; box-shadow: none; padding: 0; font: 800 13px/1 system-ui, sans-serif; color: #fff; text-shadow: 0 0 2px rgba(0,0,0,.9), 0 0 4px rgba(0,0,0,.6); }
+@media (max-width: 600px) { .m-label.dpt { font-size: 11px; padding: 0; } }
+
+/* ===== Phone balloons + collapse ===== */
+@media (max-width: 600px) {
+  .panel #gFlip .primary { grid-column: span 4; } .panel #gFlip #flipAll { grid-column: span 2; }
+  .ovrow .fold { margin: 0; width: 40px; min-height: 40px; padding: 0; flex: none; }
+  .ovrow #reset { margin-left: auto; }
+  .balloon .bal-h { margin: 0; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--line); }
+  .balloon .bal-h b { font-size: 1rem; color: var(--fg); letter-spacing: 0; text-transform: none; }
+  .balloon .bal-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .balloon.bal-ch .bal-body { max-height: 46dvh; }
+  .balloon .group { border: 0; border-radius: 0; background: none; }
+  .balloon .group + .group { border-top: 2px solid var(--line); }
+  .balloon .wp-caret { position: absolute; bottom: -8px; width: 14px; height: 14px; background: var(--surface); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); transform: rotate(45deg); }
+  .balloon [data-sheet-active] { display: block !important; max-height: none; overflow: visible; }
+  .panel.collapsed #gFlip, .panel.collapsed #gRot, .panel.collapsed .seqwrap, .panel.collapsed .tabbar { display: none !important; }
+}

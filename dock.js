@@ -7,20 +7,17 @@
   const home = { ring: ring.nextElementSibling, seqrow: seqrow.parentNode };
 
   const tabs = [
-    { label: 'Arm',       groups: [], pop: true },
-    { label: 'Option',    groups: ['gMeas', 'gContact', 'gLabels'] },
-    { label: 'Challenge', groups: ['gChal'] }
+    { label: 'Option',    balloon: 'opt' },
+    { label: 'Arm',       pop: true },
+    { label: 'Challenge', balloon: 'ch' }
   ];
   const bar = document.createElement('div'); bar.className = 'tabbar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'More controls');
   const btns = tabs.map((t, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t.label; b.setAttribute('aria-pressed', 'false'); b.onclick = () => open(open.cur === i ? -1 : i); bar.appendChild(b); return b; });
   panel.appendChild(bar);
 
   function open(i) {
-    open.cur = i;
-    document.querySelectorAll('[data-sheet-active]').forEach(e => e.removeAttribute('data-sheet-active'));
-    if (i >= 0 && !tabs[i].pop) tabs[i].groups.forEach(id => $(id).setAttribute('data-sheet-active', ''));
-    hidePop(); if (i >= 0 && tabs[i].pop) showPop();
-    panel.classList.toggle('sheet-open', i >= 0 && !tabs[i].pop);
+    open.cur = i; hidePop(); hideBal();
+    if (i >= 0) { const t = tabs[i]; if (t.pop) showPop(); else showBal(t.balloon, i); }
     btns.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
   }
   open.cur = -1;
@@ -88,15 +85,36 @@
   $('hideAll').addEventListener('click', () => setTimeout(() => syncs.forEach(s => s()), 0));
 
   const os = document.createElement('div'); os.className = 'optsheet';
+  // ---- Option / Challenge balloons (phone) ----
+  const mkBal = (cls, title) => { const d = document.createElement('div'); d.className = 'balloon ' + cls; d.hidden = true;
+    d.style.cssText = 'position:fixed;z-index:50;display:none;flex-direction:column;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35)';
+    d.innerHTML = '<div class="wp-h bal-h"><b>' + title + '</b><button type="button" class="wp-done">Done</button></div><div class="bal-body"></div><div class="wp-caret"></div>';
+    d.querySelector('.wp-done').onclick = () => open(-1); panel.appendChild(d); return d; };
+  const bals = { opt: mkBal('bal-opt', 'Option'), ch: mkBal('bal-ch', 'Challenge') };
+  function showBal(key, i) {
+    const d = bals[key], r = btns[i].getBoundingClientRect(), vw = document.documentElement.clientWidth, cx = r.left + r.width / 2; let left, w;
+    d.hidden = false; d.style.display = 'flex';
+    if (key === 'opt') { left = 8; w = vw - 16; d.style.top = (top.getBoundingClientRect().bottom + 8) + 'px'; }
+    else { w = Math.min(304, vw - 16); left = Math.max(8, Math.min(vw - w - 8, cx - w / 2)); d.style.top = 'auto'; }
+    d.style.left = left + 'px'; d.style.width = w + 'px'; d.style.bottom = (innerHeight - r.top + 10) + 'px';
+    d.querySelector('.wp-caret').style.left = (cx - left - 8) + 'px';
+  }
+  function hideBal() { Object.values(bals).forEach(d => { d.hidden = true; d.style.display = 'none'; }); }
+  document.addEventListener('pointerdown', ev => { if (Object.values(bals).some(d => !d.hidden && !d.contains(ev.target)) && !bar.contains(ev.target)) open(-1); });
+
   const orig = layout;
   function layout2() {
     orig();
     const g2 = document.querySelector('#gFlip .grid2'), acts = ['reset', 'undo', 'redo'].map($);
     const OG = ['gContact', 'gMeas', 'gLabels', 'gChal'].map($);
-    if (mq.matches) { if (!os.parentNode) panel.insertBefore(os, panel.firstChild); OG.forEach(g => os.appendChild(g)); }
-    else { const ch = $('gChal'); OG.forEach(g => { if (g.parentNode === os) panel.appendChild(g); }); os.remove(); }
-    if (mq.matches) { panel.insertBefore(row, $('gRot')); acts.forEach(b => row.appendChild(b)); $('gFlip').appendChild(fold); }
-    else { row.remove(); acts.forEach(b => g2.appendChild(b)); fold.remove(); }
+    if (mq.matches) {
+      ['gContact', 'gMeas', 'gLabels'].forEach(id => { $(id).setAttribute('data-sheet-active', ''); bals.opt.querySelector('.bal-body').appendChild($(id)); });
+      $('gChal').setAttribute('data-sheet-active', ''); bals.ch.querySelector('.bal-body').appendChild($('gChal'));
+      panel.insertBefore(row, $('gRot')); acts.forEach(b => row.appendChild(b)); row.appendChild(fold);
+    } else {
+      hideBal(); OG.forEach(g => { g.removeAttribute('data-sheet-active'); panel.insertBefore(g, bar); });
+      row.remove(); acts.forEach(b => g2.appendChild(b)); fold.remove();
+    }
   }
   mq.addEventListener('change', layout2); layout2();
   if (mq.matches) ['m_chir', 'm_dih'].forEach(id => { const c = $(id); if (!c.checked) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } });
