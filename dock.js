@@ -79,7 +79,13 @@
     const sync = () => b.setAttribute('aria-pressed', String(cb.checked));
     b.onclick = () => { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change', { bubbles: true })); sync(); };
     cb.addEventListener('change', sync); sync(); row.appendChild(b); return sync; };
-  const syncs = [mk('\u2460\u2461\u2462', 'm_chir'), mk('Dihedral', 'm_dih'), mk('A\u2013D', 'm_dlabels')];
+  const seg = document.createElement('div'); seg.className = 'ovseg'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Overlay');
+  const bM = document.createElement('button'), bD = document.createElement('button'); bM.type = bD.type = 'button'; bM.textContent = 'Markers'; bD.textContent = 'Dihedral'; seg.append(bM, bD); row.appendChild(seg);
+  const syncSeg = () => { bM.setAttribute('aria-pressed', String($('m_chir').checked)); bD.setAttribute('aria-pressed', String($('m_dih').checked)); };
+  const setOv = dih => { [['m_chir', !dih], ['m_dih', dih], ['m_dlabels', true]].forEach(([id, v]) => { const c = $(id); if (c.checked !== v) { c.checked = v; c.dispatchEvent(new Event('change', { bubbles: true })); } }); syncSeg(); };
+  bM.onclick = () => setOv(false); bD.onclick = () => setOv(true);
+  ['m_chir', 'm_dih'].forEach(id => $(id).addEventListener('change', syncSeg));
+  const syncs = [syncSeg];
   const fold = document.createElement('button'); fold.type = 'button'; fold.className = 'fold'; fold.setAttribute('aria-label', 'Collapse controls'); fold.setAttribute('aria-expanded', 'true'); fold.textContent = '\u25BE';
   fold.onclick = () => { open(-1); const c = panel.classList.toggle('collapsed'); fold.setAttribute('aria-expanded', String(!c)); fold.textContent = c ? '\u25B4' : '\u25BE'; };
   $('hideAll').addEventListener('click', () => setTimeout(() => syncs.forEach(s => s()), 0));
@@ -117,8 +123,7 @@
     }
   }
   mq.addEventListener('change', layout2); layout2();
-  if (mq.matches) ['m_chir', 'm_dih'].forEach(id => { const c = $(id); if (!c.checked) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } });
-  if (mq.matches) { const c = $('m_dlabels'); if (c.checked) { c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); } }
+  if (mq.matches) setOv(true);
 })();
 
 /* Light / dark toggle — follows the OS until the user taps it, then remembers the choice */
@@ -166,4 +171,13 @@
     lastUnit = m[1]; if (center) setTimeout(() => $('focusSel').click(), 60);
   }
   new MutationObserver(() => recentre(false)).observe($('selUnit'), { childList: true, characterData: true, subtree: true });
+})();
+
+/* Chirality markers and four-point dihedral are mutually exclusive; the dihedral always shows its A–D labels */
+(() => {
+  const $ = id => document.getElementById(id), c = $('m_chir'), d = $('m_dih'), l = $('m_dlabels');
+  const set = (el, v) => { if (el.checked !== v) { el.checked = v; el.dispatchEvent(new Event('change', { bubbles: true })); } };
+  c.addEventListener('change', () => { if (c.checked) set(d, false); });
+  d.addEventListener('change', () => { if (d.checked) { set(c, false); set(l, true); } });
+  set(l, true);
 })();

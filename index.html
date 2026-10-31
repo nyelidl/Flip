@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pillararene 3D Chirality Explorer</title>
-<link rel="stylesheet" href="style.css?v=27">
+<link rel="stylesheet" href="style.css?v=29">
 <!--DATA-->
 </head>
 <body>
@@ -73,9 +73,9 @@
     <div class="group" id="gMeas">
       <h2>Geometry measurements</h2>
       <label class="row" title="Turn of the CAD body about its CH₂···CH₂ bridge axis (the slider value, measured from the geometry). 0° = as assembled."><span><input type="checkbox" id="m_rot" checked> rotation angle</span></label>
-      <label class="row" title="① CH₂ on the ring frame, ② ring C bonded to it, ③ ortho C bearing O — the atoms used to assign pR/pS."><span><input type="checkbox" id="m_chir"> chirality markers ①②③</span></label>
-      <label class="row" title="Signed dihedral A–B–C–D (−180…+180°) about the CH₂–C bond B→C. A different quantity from the rotation angle."><span><input type="checkbox" id="m_dih"> four-point dihedral</span></label>
-      <div class="subopts"><label><input type="checkbox" id="m_dplanes" checked> planes</label><label><input type="checkbox" id="m_darc" checked> arc</label><label><input type="checkbox" id="m_dlabels" checked> A–D labels</label></div>
+      <label class="row" title="① CH₂ on the ring frame, ② ring C bonded to it, ③ ortho C bearing O — the atoms used to assign pR/pS."><span><input type="checkbox" id="m_chir"> chirality markers</span></label>
+      <label class="row" title="Signed dihedral A–B–C–D (−180…+180°) about the CH₂–C bond B→C. A different quantity from the rotation angle."><span><input type="checkbox" id="m_dih"> four-point dihedral <small class="muted">(with A–D)</small></span></label>
+      <div class="subopts"><label><input type="checkbox" id="m_dplanes" checked> planes</label><label><input type="checkbox" id="m_darc" checked> arc</label><label hidden><input type="checkbox" id="m_dlabels" checked> A–D labels</label></div>
       <div id="dihInfo" class="dih-info" hidden>
         <div><b>Selected unit:</b> <span id="dihUnit"></span></div>
         <div><b>A</b> <span id="dihA"></span></div>
@@ -135,6 +135,6 @@
   </section>
 </main>
 <script src="dist/app.js"></script>
-<script src="dock.js?v=27"></script>
+<script src="dock.js?v=29"></script>
 </body>
 </html>
