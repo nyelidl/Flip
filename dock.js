@@ -33,7 +33,7 @@
   const parse = t => { const m = /^(.*?)\s*\((.*)\)$/.exec(t.trim()); return m ? [m[1], m[2]] : [t, '']; };
   pop.innerHTML = '<div class="wp-h"><label class="wp-switch"><input type="checkbox" class="wp-hide"><span>Hide arm</span></label><button type="button" class="wp-done">Done</button></div><div class="wp-sub">Bead size \u00B7 swipe or tap</div>' +
     '<div class="beadrow" role="radiogroup" aria-label="Bead size">' + opts.map(o => { const [a] = parse(o.textContent), mm = parseFloat(a) || 13;
-      return '<button type="button" class="bead" role="radio" data-v="' + o.value + '"><span class="orb"><i style="width:' + Math.round(mm * 1.7) + 'px;height:' + Math.round(mm * 1.7) + 'px"></i></span><b>' + mm + '</b></button>'; }).join('') + '</div>' +
+      return '<button type="button" class="bead" role="radio" data-v="' + o.value + '"><span class="orb"><i style="width:' + Math.round(mm * 1.7) + 'px;height:' + Math.round(mm * 1.7) + 'px;--bc:' + ({13:'#9acbe4',16:'#f1b5c1',19:'#f29d29',27:'#f1ca14'}[mm] || '#9acbe4') + '"></i></span><b>' + mm + '</b></button>'; }).join('') + '</div>' +
     '<div class="beadname" id="wpName"></div><p class="wp-note" id="wpMech"></p>' +
     '<div class="wp-caret"></div>';
   document.body.appendChild(pop);

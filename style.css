@@ -276,7 +276,7 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 .skin { flex: none; width: 104px; scroll-snap-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); opacity: .55; transform: scale(.88); transition: transform .15s, opacity .15s, border-color .15s; cursor: pointer; }
 .skin[data-active="true"] { opacity: 1; transform: none; border: 2px solid var(--accent); }
 .skin .orb { height: 64px; display: grid; place-items: center; }
-.skin .orb i { display: block; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c9f6fb 0%, #5ae0f0 35%, #159FB8 100%); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.skin .orb i { display: block; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d2fbff 0%, #61eaff 22%, #57d9e9 55%, #3a9fb0 100%); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
 .skin b { font-size: 1rem; } .skin small { font-size: .72rem; color: var(--muted); text-align: center; }
 .skindots { display: flex; justify-content: center; gap: 6px; margin: 2px 0 4px; }
 .skindots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); } .skindots i[data-active="true"] { background: var(--accent); }
@@ -286,7 +286,7 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 .beadrow::before { content: ""; position: absolute; left: 24px; right: 24px; bottom: 30px; height: 3px; background: var(--line); }
 .bead { position: relative; flex: 1; min-height: 0; padding: 0; border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; border-radius: 10px; }
 .bead .orb { height: 56px; display: flex; align-items: center; justify-content: center; }
-.bead .orb i { display: block; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c9f6fb 0%, #5ae0f0 35%, #159FB8 100%); opacity: .45; transition: transform .15s, opacity .15s, box-shadow .15s; }
+.bead .orb i { display: block; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d2fbff 0%, #61eaff 22%, #57d9e9 55%, #3a9fb0 100%); opacity: .45; transition: transform .15s, opacity .15s, box-shadow .15s; }
 .bead[data-pass="true"] .orb i { opacity: .75; }
 .bead[data-on="true"] .orb i { opacity: 1; transform: scale(1.12); box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent); }
 .bead b { font-size: .85rem; color: var(--muted); } .bead[data-on="true"] b { color: var(--fg); }
@@ -328,3 +328,16 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 .bead[data-on="true"] .orb i { box-shadow: 0 2px 6px rgba(0,0,0,.3); outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .row:has(#dimOthers) { --dot: #8FA1AA; }
+
+/* Desktop: drop the text sequence, enlarge the readout box */
+.seqtext { display: none; }
+.readout { min-width: 210px; border-radius: 12px; }
+.readout .rh { font-size: .8rem; padding: 6px 8px 6px 14px; } .readout .rh button { min-height: 34px; font-size: .82rem; padding: 0 12px; }
+.readout .rr { padding: 9px 14px; gap: 22px; } .readout .rr span { font-size: .95rem; } .readout .rr b { font-size: 1.6rem; }
+@media (max-width: 600px) { .readout { min-width: 160px; } .readout .rr { padding: 6px 12px; } .readout .rr span { font-size: .85rem; } .readout .rr b { font-size: 1.25rem; } }
+
+/* Desktop / tablet: hide the point-to-point distance measurement */
+@media (min-width: 601px) { .row:has(#m_dist), .dist-sel { display: none; } }
+
+/* Bead circles use the real filament colours: 13 blue, 16 pink, 19 orange, 27 yellow */
+.bead .orb i { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--bc) 40%, #fff) 0%, var(--bc) 55%, color-mix(in srgb, var(--bc) 72%, #000) 100%); }
