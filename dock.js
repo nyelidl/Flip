@@ -229,3 +229,15 @@
   p.addEventListener('pointerdown', () => { if (p.getAttribute('aria-pressed') === 'true') { t = Date.now(); p.click(); } }, true);
   p.addEventListener('click', e => { if (e.isTrusted && Date.now() - t < 800) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 })();
+
+/* Desktop ≥1100px: two vertical control columns (viewer : column : column = 3 : 1 : 1) */
+(() => {
+  const mq = window.matchMedia('(min-width: 1100px)'), $ = id => document.getElementById(id), panel = document.querySelector('.panel');
+  const A = ['gRing', 'gArms', 'gFlip', 'gRot'], B = ['gContact', 'gMeas', 'gLabels', 'gChal'];
+  const ca = document.createElement('div'), cb = document.createElement('div'); ca.className = 'ctlcol colA'; cb.className = 'ctlcol colB';
+  function lay() {
+    if (mq.matches) { panel.append(ca, cb); A.forEach(id => ca.appendChild($(id))); B.forEach(id => cb.appendChild($(id))); }
+    else if (ca.parentNode) { [...A, ...B].forEach(id => { const g = $(id); if (g.parentNode === ca || g.parentNode === cb) panel.insertBefore(g, ca); }); ca.remove(); cb.remove(); }
+  }
+  mq.addEventListener('change', lay); lay();
+})();
