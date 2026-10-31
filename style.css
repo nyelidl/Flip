@@ -202,3 +202,14 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .ovrow .fold { margin-left: auto; width: 44px; min-height: 40px; padding: 0; }
   .panel.collapsed #gFlip, .panel.collapsed .tabbar, .panel.collapsed [data-sheet-active] { display: none; }
 }
+
+/* ===== Manual light / dark (overrides OS preference once the user taps the toggle) ===== */
+:root[data-theme="light"] { --bg: var(--grey-bg); --surface: #ffffff; --fg: var(--charcoal); --muted: var(--slate); --line: #D6DFE3;
+  --accent: var(--cyan-ink); --accent-fill: var(--cyan-ink); --accent-fg: #ffffff; --ok: #1E7F5C; --warn: #9a5b00; --bad: #b3261e;
+  --chip0: var(--cyan-light); --chip1: #DCE3E6; --viewer: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #E6EDF0 100%); color-scheme: light; }
+:root[data-theme="dark"] { --bg: #1B2328; --surface: #232D33; --fg: #E6EDF0; --muted: #9FB2BB; --line: #34424A;
+  --accent: #3CC2D8; --accent-fill: #159FB8; --accent-fg: #0B1A1F; --ok: #6cc28d; --warn: #e2a64b; --bad: #ef8a83;
+  --chip0: #1F4A53; --chip1: #3A474E; --viewer: radial-gradient(ellipse at 50% 40%, #2C3940 0%, #182025 100%); color-scheme: dark; }
+.top { position: relative; }
+.theme-btn { position: absolute; right: 20px; top: 12px; width: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+@media (max-width: 600px) { .theme-btn { position: static; flex: none; width: 40px; min-height: 40px; } }
