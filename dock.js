@@ -241,3 +241,27 @@
   }
   mq.addEventListener('change', lay); lay();
 })();
+
+/* Status note beside "angle": Partially flipped / Conceptual flip (replaces the top banners) */
+(() => {
+  const $ = id => document.getElementById(id), row = document.querySelector('#gRot .slider-row'), out = $('angleOut');
+  if (!row || !out) return;
+  const note = document.createElement('span'); note.className = 'angnote'; note.hidden = true; row.insertBefore(note, out);
+  document.documentElement.classList.add('has-note');
+  const sel = $('style'), isOTs = () => /^\s*27/.test((sel.options[sel.selectedIndex] || {}).text || '');
+  let holdUntil = 0, last = '';
+  function paint() {
+    const part = !$('partial').hidden, conc = !$('conceptual').hidden || (isOTs() && $('unitSel').value !== '');
+    if (part) holdUntil = Date.now() + 1500;
+    let kind = conc ? 'conc' : (part || Date.now() < holdUntil) ? 'part' : '';
+    if (kind === last) return; last = kind;
+    note.hidden = !kind; note.dataset.k = kind;
+    note.textContent = kind === 'conc' ? 'Conceptual flip' : kind === 'part' ? 'Partially flipped' : '';
+    note.title = kind === 'conc' ? $('conceptual').textContent : kind === 'part' ? $('partial').textContent : '';
+    if (kind === 'part') setTimeout(paint, 1600);
+  }
+  const mo = new MutationObserver(paint);
+  ['partial', 'conceptual'].forEach(id => mo.observe($(id), { attributes: true, attributeFilter: ['hidden'] }));
+  sel.addEventListener('change', () => setTimeout(paint, 50)); $('unitSel').addEventListener('change', () => setTimeout(paint, 50));
+  $('angle').addEventListener('input', () => setTimeout(paint, 0)); paint();
+})();

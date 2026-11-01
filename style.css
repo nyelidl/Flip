@@ -504,3 +504,13 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   #gMeas > .subopts { margin: 0 0 4px 26px; }
   #gMeas .row { min-height: 32px; }
 }
+
+/* Angle status note (in the dock) — top banners hidden once it is active */
+.has-note #partial, .has-note #conceptual { display: none !important; }
+.angnote { flex: 1; min-width: 0; margin: 0 10px; padding: 3px 10px; font-size: .78rem; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; border-radius: 8px; align-self: center; }
+.angnote[data-k="part"] { background: #C3E7EE; color: #083F49; }
+.angnote[data-k="conc"] { background: #FBE3B8; color: #5A3600; }
+:root[data-theme="dark"] .angnote[data-k="part"] { background: #1F4A53; color: #D7F3F8; }
+:root[data-theme="dark"] .angnote[data-k="conc"] { background: #5A4310; color: #FBE3B8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .angnote[data-k="part"] { background: #1F4A53; color: #D7F3F8; } :root:not([data-theme="light"]) .angnote[data-k="conc"] { background: #5A4310; color: #FBE3B8; } }
+.panel .slider-row { align-items: center; }
