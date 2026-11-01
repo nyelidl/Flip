@@ -531,3 +531,7 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
   .viewer-wrap:has(.banner:not([hidden]):not(.error)) .cam { top: 46px; }
   .angnote { width: 8.4em; font-size: .72rem; }
 }
+
+/* Fixed-size status chip (an <i>, so no generic "row > span" rule can stretch it) */
+.angnote { display: block !important; flex: 0 0 10.6em !important; width: 10.6em !important; max-width: 10.6em !important; box-sizing: border-box; margin: 0 8px !important; padding: 3px 4px !important; font-style: normal; font-size: .72rem !important; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: center; border-radius: 8px; background: transparent; visibility: visible; }
+.angnote[data-k=""] { background: transparent !important; }

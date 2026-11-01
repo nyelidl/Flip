@@ -246,19 +246,19 @@
 (() => {
   const $ = id => document.getElementById(id), row = document.querySelector('#gRot .slider-row'), out = $('angleOut');
   if (!row || !out) return;
-  const note = document.createElement('span'); note.className = 'angnote'; note.hidden = true; row.insertBefore(note, out);
+  const note = document.createElement('i'); note.className = 'angnote'; note.textContent = '\u00A0'; row.insertBefore(note, out);
   document.documentElement.classList.add('has-note');
   const sel = $('style'), isOTs = () => /^\s*27/.test((sel.options[sel.selectedIndex] || {}).text || '');
-  let holdUntil = 0, last = '';
+  let holdUntil = 0, last = null, timer = 0;
   function paint() {
     const part = !$('partial').hidden, conc = !$('conceptual').hidden || (isOTs() && $('unitSel').value !== '');
     if (part) holdUntil = Date.now() + 1500;
-    let kind = conc ? 'conc' : (part || Date.now() < holdUntil) ? 'part' : '';
+    const held = Date.now() < holdUntil;
+    const kind = conc ? 'conc' : (part || held) ? 'part' : '';
+    clearTimeout(timer); if (held) timer = setTimeout(paint, holdUntil - Date.now() + 30);
     if (kind === last) return; last = kind;
-    note.hidden = !kind; note.dataset.k = kind;
-    note.textContent = kind === 'conc' ? 'Conceptual flip' : kind === 'part' ? 'Partially flipped' : '';
+    note.dataset.k = kind; note.textContent = kind === 'conc' ? 'Conceptual flip' : kind === 'part' ? 'Partially flipped' : '\u00A0';
     note.title = kind === 'conc' ? $('conceptual').textContent : kind === 'part' ? $('partial').textContent : '';
-    if (kind === 'part') setTimeout(paint, 1600);
   }
   const mo = new MutationObserver(paint);
   ['partial', 'conceptual'].forEach(id => mo.observe($(id), { attributes: true, attributeFilter: ['hidden'] }));
