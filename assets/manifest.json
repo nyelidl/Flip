@@ -13,7 +13,7 @@
  "marked_body": "pillararene_hexagon_chirality_teaching_v5.stl (straight 2->3 arrow) as Phenylene_01",
  "glb": {
   "P5": {
-   "sha256": "054a7912139067ab0ff82f5d057b07bf5922abfebca52a675b6746e070f64b2d",
+   "sha256": "a4459d5a31d86a1fd11c5e034aa3931b55325a7f1b9f4063ceff590b546b8108",
    "triangles": {
     "Hexagonal_Body_01": 16120,
     "Hexagonal_Body_02": 6284,
@@ -21,12 +21,19 @@
    }
   },
   "P6": {
-   "sha256": "3c4fd545327e3faf94305fdb8c35b178a9dc2b16e1acdf6caff4dd4acd237e9d",
+   "sha256": "3363ce5e6abd55ee1b7bf9b4b1e1ccc83069e31d6c20f36db2748ac11a9625c3",
    "triangles": {
     "Hexagonal_Body_01": 16120,
     "Hexagonal_Body_02": 6284,
     "Ring_Frame": 27152
    }
   }
+ },
+ "bead_colours": {
+  "Bead13": "#a0c6dd",
+  "Bead16": "#e6b6c0",
+  "Bead19": "#ec8f37",
+  "Bead27": "#efd34b",
+  "note": "filament swatch colours (sRGB); stored linear in the GLB materials"
  }
 }

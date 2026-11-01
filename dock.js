@@ -1,4 +1,4 @@
-/* dock.js — phone layout helper. Load AFTER dist/app.js. Moves existing nodes only (ids stay), so app.js keeps working. */
+/* dock.js — phone layout helper (merged: + Explain tab, auto-centre after the double-tap window). Load AFTER dist/app.js. Moves existing nodes only (ids stay), so app.js keeps working. */
 (() => {
   const mq = window.matchMedia('(max-width: 600px)');
   const $ = id => document.getElementById(id);
@@ -9,7 +9,8 @@
   const tabs = [
     { label: 'Option',    balloon: 'opt' },
     { label: 'Arm',       pop: true },
-    { label: 'Challenge', balloon: 'ch' }
+    { label: 'Challenge', balloon: 'ch' },
+    { label: 'Explain',   balloon: 'ex' }
   ];
   const bar = document.createElement('div'); bar.className = 'tabbar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'More controls');
   const btns = tabs.map((t, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t.label; b.setAttribute('aria-pressed', 'false'); b.onclick = () => open(open.cur === i ? -1 : i); bar.appendChild(b); return b; });
@@ -30,7 +31,7 @@
   const parse = t => { const m = /^(.*?)\s*\((.*)\)$/.exec(t.trim()); return m ? [m[1], m[2]] : [t, '']; };
   pop.innerHTML = '<div class="wp-h"><label class="wp-switch"><input type="checkbox" class="wp-hide"><span>Hide arm</span></label><button type="button" class="wp-done">Done</button></div><div class="wp-sub">Bead size \u00B7 swipe or tap</div>' +
     '<div class="beadrow" role="radiogroup" aria-label="Bead size">' + opts.map(o => { const [a] = parse(o.textContent), mm = parseFloat(a) || 13;
-      return '<button type="button" class="bead" role="radio" data-v="' + o.value + '"><span class="orb"><i style="width:' + Math.round(mm * 1.7) + 'px;height:' + Math.round(mm * 1.7) + 'px;--bc:' + ({13:'#9acbe4',16:'#f1b5c1',19:'#f29d29',27:'#f1ca14'}[mm] || '#9acbe4') + '"></i></span><b>' + mm + '</b></button>'; }).join('') + '</div>' +
+      return '<button type="button" class="bead" role="radio" data-v="' + o.value + '"><span class="orb"><i style="width:' + Math.round(mm * 1.7) + 'px;height:' + Math.round(mm * 1.7) + 'px;--bc:' + ({13:'#a0c6dd',16:'#e6b6c0',19:'#ec8f37',27:'#efd34b'}[mm] || '#9acbe4') + '"></i></span><b>' + mm + '</b></button>'; }).join('') + '</div>' +
     '<div class="beadname" id="wpName"></div>' +
     '<div class="wp-caret"></div>';
   document.body.appendChild(pop);
@@ -96,11 +97,11 @@
     d.style.cssText = 'position:fixed;z-index:50;display:none;flex-direction:column;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35)';
     d.innerHTML = '<div class="wp-h bal-h"><b>' + title + '</b><button type="button" class="wp-done">Done</button></div><div class="bal-body"></div><div class="wp-caret"></div>';
     d.querySelector('.wp-done').onclick = () => open(-1); panel.appendChild(d); return d; };
-  const bals = { opt: mkBal('bal-opt', 'Option'), ch: mkBal('bal-ch', 'Challenge') };
+  const bals = { opt: mkBal('bal-opt', 'Option'), ch: mkBal('bal-ch', 'Challenge'), ex: mkBal('bal-ex', 'Explain') };
   function showBal(key, i) {
     const d = bals[key], r = btns[i].getBoundingClientRect(), vw = document.documentElement.clientWidth, cx = r.left + r.width / 2; let left, w;
     d.hidden = false; d.style.display = 'flex';
-    if (key === 'opt') { left = 8; w = vw - 16; d.style.top = (top.getBoundingClientRect().bottom + 8) + 'px'; }
+    if (key === 'opt' || key === 'ex') { left = 8; w = vw - 16; d.style.top = (top.getBoundingClientRect().bottom + 8) + 'px'; }
     else { w = Math.min(304, vw - 16); left = Math.max(8, Math.min(vw - w - 8, cx - w / 2)); d.style.top = 'auto'; }
     d.style.left = left + 'px'; d.style.width = w + 'px'; d.style.bottom = (innerHeight - r.top + 10) + 'px';
     d.querySelector('.wp-caret').style.left = (cx - left - 8) + 'px';
@@ -116,9 +117,11 @@
     if (mq.matches) {
       ['gContact', 'gMeas', 'gLabels'].forEach(id => { $(id).setAttribute('data-sheet-active', ''); bals.opt.querySelector('.bal-body').appendChild($(id)); });
       $('gChal').setAttribute('data-sheet-active', ''); bals.ch.querySelector('.bal-body').appendChild($('gChal'));
+      const exb = bals.ex.querySelector('.bal-body'); exb.appendChild($('explain')); exb.appendChild(document.querySelector('.notes'));   // explanations + caveats
       panel.insertBefore(row, $('gRot')); acts.forEach(b => row.appendChild(b)); row.appendChild(fold);
     } else {
       hideBal(); OG.forEach(g => { g.removeAttribute('data-sheet-active'); panel.insertBefore(g, bar); });
+      const btm = document.querySelector('.bottom'); btm.appendChild($('explain')); btm.appendChild(document.querySelector('.notes'));
       row.remove(); acts.forEach(b => g2.appendChild(b)); fold.remove();
     }
   }
@@ -168,7 +171,9 @@
     const m = /U(\d+)/.exec(val($('selUnit'))); if (!m) { lastUnit = null; return; }
     if (!force && lastUnit === null) { lastUnit = m[1]; return; }   // first selection after load: keep the default full-ring view
     if (!force && m[1] === lastUnit) return;
-    lastUnit = m[1]; if (center) setTimeout(() => $('focusSel').click(), 60);
+    lastUnit = m[1];
+    if (center) { const go = () => { if (window.__explorer && window.__explorer.busy) setTimeout(go, 150); else $('focusSel').click(); };
+      setTimeout(go, 520); }   // after the double-tap window; if a flip is animating, centre when it has finished
   }
   new MutationObserver(() => recentre(false)).observe($('selUnit'), { childList: true, characterData: true, subtree: true });
 })();
