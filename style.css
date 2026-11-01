@@ -514,3 +514,20 @@ input[type=checkbox] { accent-color: var(--cyan-ink); }
 :root[data-theme="dark"] .angnote[data-k="conc"] { background: #5A4310; color: #FBE3B8; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .angnote[data-k="part"] { background: #1F4A53; color: #D7F3F8; } :root:not([data-theme="light"]) .angnote[data-k="conc"] { background: #5A4310; color: #FBE3B8; } }
 .panel .slider-row { align-items: center; }
+
+/* ===== Locked sizes: nothing jumps while the angle slider moves ===== */
+.angnote { flex: none; box-sizing: border-box; width: 9.2em; margin: 0 8px; text-align: center; visibility: hidden; display: block; }
+.angnote:not([hidden]) { visibility: visible; }
+.angnote[hidden] { display: block !important; }
+.panel .slider-row output, #angleOut { min-width: 4.4ch; text-align: right; font-variant-numeric: tabular-nums; flex: none; }
+.readout { box-sizing: border-box; width: 188px; min-width: 188px; font-variant-numeric: tabular-nums; }
+.readout .rr { flex: 1 1 0; min-width: 0; }
+.readout .rr b { display: block; min-width: 5.2ch; white-space: nowrap; }
+.readout .rr[hidden] { display: block !important; visibility: hidden; }
+.readout .rr[hidden] b, .readout .rr[hidden] span { visibility: hidden; }
+@media (max-width: 600px) {
+  .readout { width: 164px; min-width: 164px; }
+  .viewer-wrap:has(.banner:not([hidden]):not(.error)) .readout { top: 0; }
+  .viewer-wrap:has(.banner:not([hidden]):not(.error)) .cam { top: 46px; }
+  .angnote { width: 8.4em; font-size: .72rem; }
+}
